@@ -71,6 +71,13 @@ public class StorageService {
     return schemaVersion;
   }
 
+  public int lastInsertRowId() throws SQLException {
+    Statement statement = executeStatement("SELECT last_insert_rowid();");
+    int id = statement.getResultSet().getInt(1);
+    statement.close();
+    return id;
+  }
+
   public Statement executeStatement(String stmt) throws SQLException {
     if (connection == null) {
       throw new IllegalStateException("Database connection is not initialized");
@@ -93,7 +100,14 @@ public class StorageService {
     for (int i = 0; i < query.getParameters().size(); i++) {
       Parameter param = query.getParameters().get(i);
       switch (param.field().type()) {
-        case INTEGER -> stmt.setInt(i + 1, (Integer) param.value());
+        case INTEGER -> {
+          Integer value = (Integer) param.value();
+          if (value == null) {
+            stmt.setNull(i + 1, java.sql.Types.INTEGER);
+          } else {
+            stmt.setInt(i + 1, value);
+          }
+        }
         case TEXT -> stmt.setString(i + 1, (String) param.value());
         case BLOB -> stmt.setBytes(i + 1, (byte[]) param.value());
         case DATE -> {

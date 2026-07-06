@@ -22,7 +22,7 @@ public record Task(Integer id,
    * Convenience constructor for the fields the task list cares about.
    */
   public Task(Integer id, String title, TaskType type, String desc,
-              Integer priority, TaskStatus status, Integer parentId) {
-    this(id, title, type, desc, priority, status, null, null, null, null, parentId);
+              Integer priority, TaskStatus status,Integer projectId, Integer parentId) {
+    this(id, title, type, desc, priority, status, null, LocalDateTime.now(), LocalDateTime.now(), projectId, parentId);
   }
 }

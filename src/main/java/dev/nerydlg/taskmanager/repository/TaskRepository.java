@@ -1,5 +1,6 @@
 package dev.nerydlg.taskmanager.repository;
 
+import dev.nerydlg.taskmanager.database.FieldType;
 import dev.nerydlg.taskmanager.database.Operator;
 import dev.nerydlg.taskmanager.database.Query;
 import dev.nerydlg.taskmanager.database.QueryBuilder;
@@ -72,18 +73,29 @@ public class TaskRepository {
 
   public Task save(Task task) throws SQLException {
     log.debug("Saving task {}", task);
+    List<Object> values = new ArrayList<>();
+    values.add(task.title());
+    values.add(task.type().getValue());
+    values.add(task.desc());
+    values.add(task.priority());
+    values.add(task.status().getValue());
+    values.add(task.dueDate());
+    values.add(task.createdAt());
+    values.add(task.updatedAt());
+    values.add(task.projectId());
+    values.add(task.parentId());
+    List<FieldType> types = List.of(TEXT, INTEGER, TEXT, INTEGER, INTEGER, DATE, DATE, DATE, INTEGER, INTEGER);
+
     Query insert = QueryBuilder.create()
         .insert()
         .table(TABLE)
         .into("title", "type", "desc", "priority", "status", "due_date", "created_date", "updated_date", "project_id", "parent_id")
-        .values(List.of(task.title(), task.type(), task.desc(), task.priority(), task.status(), task.dueDate(), task.createdAt(), task.updatedAt(), task.projectId(), task.parentId())
-            , List.of(TEXT, INTEGER, TEXT, INTEGER, INTEGER, DATE, DATE, DATE, INTEGER, INTEGER))
+        .values(values, types)
         .build();
-    ResultSet rs = storageService.executeQuery(insert);
-    while (rs.next()) {
-      task = createTaskFromResultSet(rs);
-    }
-    return task;
+    storageService.executeQuery(insert);
+    int id = storageService.lastInsertRowId();
+    return new Task(id, task.title(), task.type(), task.desc(), task.priority(), task.status(),
+        task.dueDate(), task.createdAt(), task.updatedAt(), task.projectId(), task.parentId());
   }
 
   public List<Task> findAllPendingTasksByProject(Integer project) throws SQLException {
