@@ -74,6 +74,7 @@ public class ProjectTaskPanel extends JPanel {
     });
 
     newTaskButton.addActionListener(e -> onNewTask());
+    editTaskButton.addActionListener(e -> onEditTask());
 
     return toolbar;
   }
@@ -88,6 +89,25 @@ public class ProjectTaskPanel extends JPanel {
       table.addTask(saved);
     } catch (SQLException ex) {
       log.error("Failed to save task", ex);
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
+  private void onEditTask() {
+    Task selected = table.getSelectedTask();
+    if (selected == null) {
+      return;
+    }
+
+    TaskDialog dialog = new TaskDialog(frame, selected);
+    if (!dialog.isConfirmed()) {
+      return;
+    }
+    try {
+      Task updated = taskRepository.update(dialog.getTask());
+      table.updateTask(updated);
+    } catch (SQLException ex) {
+      log.error("Failed to update task", ex);
       JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }

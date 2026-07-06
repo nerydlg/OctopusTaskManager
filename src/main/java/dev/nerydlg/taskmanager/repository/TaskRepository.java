@@ -71,6 +71,29 @@ public class TaskRepository {
     storageService.executeQuery(delete);
   }
 
+  public Task update(Task task) throws SQLException {
+    log.debug("Updating task {}", task);
+    List<Object> values = new ArrayList<>();
+    values.add(task.title());
+    values.add(task.type().getValue());
+    values.add(task.desc());
+    values.add(task.priority());
+    values.add(task.status().getValue());
+    values.add(task.dueDate());
+    values.add(task.updatedAt());
+    values.add(task.parentId());
+    List<FieldType> types = List.of(TEXT, INTEGER, TEXT, INTEGER, INTEGER, DATE, DATE, INTEGER);
+    Query update = QueryBuilder.create()
+        .update()
+        .table(TABLE)
+        .set("title", "type", "desc", "priority", "status", "due_date", "updated_date", "parent_id")
+        .setValues(values, types)
+        .where("id", Operator.EQUALS, INTEGER, task.id())
+        .build();
+    storageService.executeQuery(update);
+    return task;
+  }
+
   public Task save(Task task) throws SQLException {
     log.debug("Saving task {}", task);
     List<Object> values = new ArrayList<>();
@@ -123,7 +146,7 @@ public class TaskRepository {
     String description = rs.getString("desc");
     Integer priority = rs.getInt("priority");
     int status = rs.getInt("status");
-    LocalDateTime dueDate = rs.getTimestamp("due_date").toLocalDateTime();
+    LocalDateTime dueDate = rs.getTimestamp("due_date") == null ? null : rs.getTimestamp("due_date").toLocalDateTime();
     LocalDateTime createdAt = rs.getTimestamp("created_date").toLocalDateTime();
     LocalDateTime updatedAt = rs.getTimestamp("updated_date").toLocalDateTime();
     Integer projId = rs.getInt("project_id");

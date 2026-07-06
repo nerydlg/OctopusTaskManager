@@ -227,6 +227,17 @@ public class TaskTable extends JTable {
     return model.isEmpty();
   }
 
+  /**
+   * Returns the currently selected task, or {@code null} if nothing is selected.
+   */
+  public Task getSelectedTask() {
+    int row = getSelectedRow();
+    if (row < 0 || model.isEmpty()) {
+      return null;
+    }
+    return model.taskAt(row);
+  }
+
   public void addTask(Task task) {
     model.addTask(task);
   }
