@@ -2,6 +2,7 @@ package dev.nerydlg.taskmanager.components;
 
 import dev.nerydlg.taskmanager.entity.Project;
 import dev.nerydlg.taskmanager.entity.Task;
+import dev.nerydlg.taskmanager.entity.TaskStatus;
 import dev.nerydlg.taskmanager.repository.TaskRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -75,6 +77,8 @@ public class ProjectTaskPanel extends JPanel {
 
     newTaskButton.addActionListener(e -> onNewTask());
     editTaskButton.addActionListener(e -> onEditTask());
+    deleteTaskButton.addActionListener(e -> onDeleteTask());
+    doneTaskButton.addActionListener(e -> onMarkTaskAsDone());
 
     return toolbar;
   }
@@ -89,6 +93,52 @@ public class ProjectTaskPanel extends JPanel {
       table.addTask(saved);
     } catch (SQLException ex) {
       log.error("Failed to save task", ex);
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
+  private void onDeleteTask() {
+    int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this task?",
+        "Confirmation", JOptionPane.YES_NO_OPTION);
+    if (result == JOptionPane.NO_OPTION) {
+      return;
+    }
+    Task selected = table.getSelectedTask();
+    if (selected == null) {
+      return;
+    }
+    try {
+      taskRepository.delete(selected);
+      table.removeTask(selected.id());
+    } catch (SQLException ex) {
+      log.error("Failed to delete task", ex);
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
+  private void onMarkTaskAsDone() {
+    int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to mark this task as done?", "Confirmation", JOptionPane.YES_NO_OPTION);
+    if (result == JOptionPane.NO_OPTION) {
+      return;
+    }
+
+    Task selected = table.getSelectedTask();
+    Task done = new Task(selected.id(),
+        selected.title(),
+        selected.type(),
+        selected.desc(),
+        selected.priority(),
+        TaskStatus.DONE,
+        selected.dueDate(),
+        selected.createdAt(),
+        LocalDateTime.now(),
+        selected.projectId(),
+        selected.parentId());
+    try {
+      taskRepository.update(done);
+      table.updateTask(done);
+    } catch (SQLException ex) {
+      log.error("Failed to mark task as done", ex);
       JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
