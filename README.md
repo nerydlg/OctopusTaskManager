@@ -8,8 +8,7 @@ As a person with multiple hobbies, I sometimes feel overwhelmed by the side proj
     - Shows the Done tasks per project.
     - Shows the percentage of different priorities across all your projects.
     - Suggests what task to do next.
-
-![Dashboard picture](https://github.com/nerydlg/OctopusTaskManager/tree/main/src/main/resources/md-images/dashboard.png)
+![Dashboard picture](https://github.com/nerydlg/OctopusTaskManager/blob/main/src/main/resources/md-images/dashboard.png?raw=true)
 
 - Project tabs
     - Add a new project.
@@ -17,7 +16,7 @@ As a person with multiple hobbies, I sometimes feel overwhelmed by the side proj
     - Create child tasks.
     - Move the tasks through your process.
 
-![Project view](https://github.com/nerydlg/OctopusTaskManager/tree/main/src/main/resources/md-images/task_view.png) 
+![Project view](https://github.com/nerydlg/OctopusTaskManager/blob/main/src/main/resources/md-images/task_view.png?raw=true)
 
 ## Versions
 I consider the current code a *beta* version; it works, but I haven't fully tested it.
