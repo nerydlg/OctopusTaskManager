@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.nerydlg</groupId>
   <artifactId>TaskManager</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.1-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
@@ -111,7 +111,7 @@
     <jpackage.icon>${project.basedir}/src/main/resources/ico/octopus_preview_64.png</jpackage.icon>
     <maven.compiler.source>22</maven.compiler.source>
     <maven.compiler.target>22</maven.compiler.target>
-    <jpackage.appVersion>0.0.1</jpackage.appVersion>
+    <jpackage.appVersion>0.1.1</jpackage.appVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <log4j.version>2.24.3</log4j.version>
   </properties>
