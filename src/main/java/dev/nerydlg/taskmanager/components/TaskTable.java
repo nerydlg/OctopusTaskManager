@@ -55,7 +55,7 @@ public class TaskTable extends JTable {
     this.model = new TaskTableModel(tasks);
     setModel(model);
 
-    setRowHeight(24);
+    setRowHeight(32);
     setFillsViewportHeight(true);
     setShowVerticalLines(false);
     setAutoCreateRowSorter(false); // sorting is handled by the model
@@ -78,10 +78,12 @@ public class TaskTable extends JTable {
     if (priority == null) {
       return null;
     }
-    if (priority >= 3) return new Color(0xE8F5E9); // lowest  - green
-    if (priority == 2) return new Color(0xFFF8E1); // low     - amber
-    if (priority == 1) return new Color(0xFFE0B2); // medium  - orange
-    return new Color(0xFFCDD2);                    // high    - red
+    if (priority == 5) return new Color(110, 250, 200); // 200
+    if (priority == 4) return new Color(130, 220, 190); // 190
+    if (priority == 3) return new Color(150, 200, 160); // 160
+    if (priority == 2) return new Color(190, 190, 120); // 150
+    if (priority == 1) return new Color(200, 120, 140); // 140
+    return new Color(230, 110, 100);
   }
 
   private static Color statusColor(TaskStatus status) {
@@ -89,10 +91,10 @@ public class TaskTable extends JTable {
       return Color.GRAY;
     }
     return switch (status) {
-      case NEW -> new Color(0x1976D2);
-      case IN_PROGRESS -> new Color(0xF9A825);
-      case CLOSE -> new Color(0x757575);
-      case DONE -> new Color(0x388E3C);
+      case NEW -> new Color(100, 100, 100);
+      case IN_PROGRESS -> new Color(220, 220, 110);
+      case CLOSE -> new Color(200, 100, 100);
+      case DONE -> new Color(100, 200, 100);
     };
   }
 
@@ -101,10 +103,10 @@ public class TaskTable extends JTable {
       return Color.GRAY;
     }
     return switch (type) {
-      case TASK -> new Color(0x607D8B);
-      case FIX -> new Color(0xE53935);
-      case FEATURE -> new Color(0x1E88E5);
-      case INVESTIGATE -> new Color(0x8E24AA);
+      case TASK -> new Color(220, 220, 120);
+      case FIX -> new Color(250, 100, 100);
+      case FEATURE -> new Color(50, 100, 250);
+      case INVESTIGATE -> new Color(60, 200, 50);
     };
   }
 

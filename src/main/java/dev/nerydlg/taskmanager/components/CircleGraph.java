@@ -12,6 +12,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,11 @@ public class CircleGraph extends JComponent {
 
   private static final Integer THICKNESS = 50;
   private static final Integer LINE_DISTANCE = 50;
+  private static final Integer LABEL_DISTANCE = 20;
   private static final Stroke graphStroke = new BasicStroke(THICKNESS, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
   private static final Stroke basicStroke = new BasicStroke(1);
 
-  private final int startX = 100;
+  private final int startX = 200;
   private final int startY = 100;
   private final Integer width;
   private final Integer height;
@@ -70,39 +72,50 @@ public class CircleGraph extends JComponent {
     Integer total = getTotalCount();
     double lastAngle = 0;
     int i = 0;
-
+    Map<String,Point2D[]> linePoints = new HashMap<>();
     g2d.setStroke(graphStroke);
+
     for (Map.Entry<String, Integer> entry : data.entrySet()) {
       double angle = getAngle(entry.getValue(), total);
-      double percentage = getPercentage(entry.getValue(), total);
       Arc2D.Double arc = new Arc2D.Double(startX, startY, width, height, lastAngle, angle, Arc2D.OPEN);
       g2d.setColor(colors.get(i));
-      g2d.setStroke(graphStroke);
       g2d.draw(arc);
-
+      // calculate middle point and store it to use it later
       double midAngle = lastAngle + angle / 2;
       Point2D middlePoint = new Arc2D.Double(startX, startY, width, height, midAngle, 0, Arc2D.OPEN).getStartPoint();
-      Point2D labelPoint = calculateEndPoint(middlePoint);
-      Line2D.Double labelLine = new Line2D.Double(middlePoint.getX(), middlePoint.getY(), labelPoint.getX(), labelPoint.getY());
-      g2d.setColor(Color.BLACK);
-      g2d.setStroke(basicStroke);
-      g2d.draw(labelLine);
+      Point2D labelPoint = calculateEndPoint(middlePoint, LINE_DISTANCE);
+      linePoints.put(entry.getKey(), new Point2D[]{middlePoint, labelPoint});
 
-      g2d.drawString(entry.getKey(), (float)labelPoint.getX(), (float)labelPoint.getY());
-      g2d.drawString(String.format("%.2f %%", percentage), (float)middlePoint.getX(), (float)middlePoint.getY());
       lastAngle += angle;
-      // reset colors
+      // reset colors if needed
       if(i < colors.size()-1) {
         i++;
       } else {
         i = 0;
       }
     }
+    // draw lines and labels
+    g2d.setColor(Color.BLACK);
+    g2d.setStroke(basicStroke);
+    for (Map.Entry<String, Point2D[]> point2DEntry : linePoints.entrySet()) {
+      double percentage = getPercentage(data.get(point2DEntry.getKey()), total);
+      Line2D.Double line = new Line2D.Double(
+          point2DEntry.getValue()[0].getX(),
+          point2DEntry.getValue()[0].getY(),
+          point2DEntry.getValue()[1].getX(),
+          point2DEntry.getValue()[1].getY());
+      g2d.draw(line);
+      Point2D labelPoint = calculateEndPoint(point2DEntry.getValue()[1], LABEL_DISTANCE);
+      g2d.drawString(point2DEntry.getKey(),
+          (float)labelPoint.getX(),
+          (float)labelPoint.getY());
+      g2d.drawString(String.format("%.2f %%", percentage), (float)point2DEntry.getValue()[0].getX(), (float)point2DEntry.getValue()[0].getY());
+
+    }
     g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 80));
     g2d.drawString( String.format("%d", total), ((width/2) - 40)+startX, ((height/2) + 20) + startY);
     g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 16));
     g2d.drawString( this.title, ((width/2) - 50)+startX, ((height/2) + 40) + startY);
-    // drawInnerCircle(g2d);
   }
 
   private void drawInnerCircle(Graphics2D g2d) {
@@ -125,18 +138,18 @@ public class CircleGraph extends JComponent {
     return (double) count / total * 360;
   }
 
-  private Point2D calculateEndPoint(Point2D point){
+  private Point2D calculateEndPoint(Point2D point, Integer distance){
     Point2D endPoint = null;
     double middleX = (width/2) + startX;
     double middleY = (height/2) + startY;
     if(point.getX() >= middleX && point.getY() <= middleY) { // top-right
-      endPoint = new Point2D.Double(point.getX() + LINE_DISTANCE, point.getY() - LINE_DISTANCE);
+      endPoint = new Point2D.Double(point.getX() + distance, point.getY() - distance);
     } else if(point.getX() <= middleX && point.getY() <= middleY) { // top-left
-      endPoint = new Point2D.Double(point.getX() - LINE_DISTANCE, point.getY() - LINE_DISTANCE);
+      endPoint = new Point2D.Double(point.getX() - distance, point.getY() - distance);
     } else if(point.getX() <= middleX && point.getY() >= middleY) { // bottom-left
-      endPoint = new Point2D.Double(point.getX() - LINE_DISTANCE, point.getY() + LINE_DISTANCE);
+      endPoint = new Point2D.Double(point.getX() - distance, point.getY() + distance);
     } else { // bottom-right
-      endPoint = new Point2D.Double(point.getX() + LINE_DISTANCE, point.getY() + LINE_DISTANCE);
+      endPoint = new Point2D.Double(point.getX() + distance, point.getY() + distance);
     }
 
     return endPoint;

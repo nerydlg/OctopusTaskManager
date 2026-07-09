@@ -2,6 +2,7 @@ package dev.nerydlg.taskmanager.repository;
 
 import dev.nerydlg.taskmanager.database.FieldType;
 import dev.nerydlg.taskmanager.database.Operator;
+import dev.nerydlg.taskmanager.database.OrderType;
 import dev.nerydlg.taskmanager.database.Query;
 import dev.nerydlg.taskmanager.database.QueryBuilder;
 import dev.nerydlg.taskmanager.entity.Task;
@@ -159,6 +160,73 @@ public class TaskRepository {
     return map;
   }
 
+  public Map<String, Integer> CountTasksByPriority() throws SQLException {
+    log.debug("Getting number of tasks per priority");
+    Map<String, Integer> map = new HashMap<>();
+    Query query = QueryBuilder.create()
+        .select("priority", "count(id) as count_task")
+        .from(TABLE)
+        .where("status", Operator.LESS_THAN, INTEGER, TaskStatus.CLOSE.getValue())
+        .groupBy("priority")
+        .build();
+    ResultSet rs = storageService.executeQuery(query);
+    while(rs.next()) {
+      map.put(rs.getString("priority"), rs.getInt("count_task"));
+    }
+    return map;
+  }
+
+  public Task findById(Integer id) throws SQLException {
+    log.debug("Finding task by id {}", id);
+    Query query = QueryBuilder.create()
+        .selectAll()
+        .from(TABLE)
+        .where("id", Operator.EQUALS, INTEGER, id)
+        .build();
+    ResultSet rs = storageService.executeQuery(query);
+    return rs.next() ? createTaskFromResultSet(rs) : null;
+  }
+
+  /**
+   * Candidate tasks for the parent-task picker: same project, title matching the
+   * query, excluding the task itself so it can't become its own parent.
+   */
+  public List<Task> searchTasksForParentPicker(String titleQuery, Integer projectId, Integer excludeId, int limit)
+      throws SQLException {
+    log.debug("Searching tasks titled like '{}' in project {} for parent picker", titleQuery, projectId);
+    QueryBuilder builder = QueryBuilder.create()
+        .selectAll()
+        .from(TABLE)
+        .where("project_id", Operator.EQUALS, INTEGER, projectId)
+        .and("title", Operator.LIKE, TEXT, "%" + titleQuery + "%");
+    if (excludeId != null) {
+      builder = builder.and("id", Operator.NOT_EQUALS, INTEGER, excludeId);
+    }
+    Query query = builder.orderBy(OrderType.ASC, "title").limit(limit).build();
+    ResultSet rs = storageService.executeQuery(query);
+    List<Task> tasks = new ArrayList<>();
+    while (rs.next()) {
+      tasks.add(createTaskFromResultSet(rs));
+    }
+    return tasks;
+  }
+
+  public List<Task> findNextSuggestedTasks(int numberOfSuggestions) throws SQLException {
+    List<Task> tasks = new ArrayList<>();
+    Query query = QueryBuilder.create()
+        .selectAll()
+        .from(TABLE)
+        .where("status", Operator.EQUALS, INTEGER, TaskStatus.NEW.getValue())
+        .orderBy(OrderType.ASC, "priority")
+        .limit(numberOfSuggestions)
+        .build();
+    ResultSet rs = storageService.executeQuery(query);
+    while (rs.next()) {
+      tasks.add(createTaskFromResultSet(rs));
+    }
+    return tasks;
+  }
+
   private Task createTaskFromResultSet(ResultSet rs) throws SQLException {
     log.debug("Creating task from result set");
     Integer id = rs.getInt("id");
@@ -184,5 +252,6 @@ public class TaskRepository {
         projId,
         parentId);
   }
+
 
 }

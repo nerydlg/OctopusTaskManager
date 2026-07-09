@@ -84,7 +84,7 @@ public class ProjectTaskPanel extends JPanel {
   }
 
   private void onNewTask() {
-    TaskDialog dialog = new TaskDialog(frame, project.id(), null);
+    TaskDialog dialog = new TaskDialog(frame, taskRepository, project.id(), null);
     if (!dialog.isConfirmed()) {
       return;
     }
@@ -149,7 +149,7 @@ public class ProjectTaskPanel extends JPanel {
       return;
     }
 
-    TaskDialog dialog = new TaskDialog(frame, selected);
+    TaskDialog dialog = new TaskDialog(frame, taskRepository, selected);
     if (!dialog.isConfirmed()) {
       return;
     }

@@ -250,6 +250,11 @@ public class QueryBuilder {
     return this;
   }
 
+  public QueryBuilder orderBy(OrderType orderType, String... fields) {
+    query.append("ORDER BY ").append(String.join(", ", fields)).append(" ").append(orderType.name()).append(" ");
+    return this;
+  }
+
   public Query build() {
     if (tableName == null) {
       throw new IllegalArgumentException("Table name is required");
@@ -268,5 +273,10 @@ public class QueryBuilder {
 
   private boolean requiresFields() {
     return queryType == QueryType.SELECT;
+  }
+
+  public QueryBuilder limit(int num) {
+    query.append("LIMIT ").append(num).append(" ");
+    return this;
   }
 }

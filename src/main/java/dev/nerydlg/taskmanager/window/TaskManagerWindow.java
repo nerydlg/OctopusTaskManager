@@ -51,7 +51,7 @@ public class TaskManagerWindow implements Runnable {
 
   private void show() {
     if (isInitialized) {
-      // frame.pack(); // uncomment to make the window fit the content
+      frame.pack(); // uncomment to make the window fit the content
       frame.setVisible(true);
     }
   }
