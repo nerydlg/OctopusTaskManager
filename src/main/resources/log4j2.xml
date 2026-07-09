@@ -2,7 +2,7 @@
 <Configuration status="WARN">
     <Properties>
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
-        <Property name="LOG_DIR">${sys:user.home}/.taskmanager/logs</Property>
+        <Property name="LOG_DIR">${sys:user.home}/.octopus-task-manager/logs</Property>
     </Properties>
 
     <Appenders>

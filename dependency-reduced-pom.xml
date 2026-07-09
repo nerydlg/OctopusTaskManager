@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.nerydlg</groupId>
   <artifactId>TaskManager</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
@@ -27,6 +27,63 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>jpackage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>stage-jpackage-input</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/jpackage-input</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.directory}</directory>
+                      <includes>
+                        <include>${project.build.finalName}.jar</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.8.0</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <name>TaskManager</name>
+              <appVersion>${jpackage.appVersion}</appVersion>
+              <vendor>nerydlg</vendor>
+              <destination>${project.build.directory}/dist</destination>
+              <removeDestination>true</removeDestination>
+              <input>${project.build.directory}/jpackage-input</input>
+              <mainJar>${project.build.finalName}.jar</mainJar>
+              <mainClass>dev.nerydlg.taskmanager.Application</mainClass>
+              <icon>${jpackage.icon}</icon>
+              <type>${jpackage.type}</type>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -50,8 +107,11 @@
     </dependency>
   </dependencies>
   <properties>
-    <maven.compiler.target>22</maven.compiler.target>
+    <jpackage.type>APP_IMAGE</jpackage.type>
+    <jpackage.icon>${project.basedir}/src/main/resources/ico/octopus_preview_64.png</jpackage.icon>
     <maven.compiler.source>22</maven.compiler.source>
+    <maven.compiler.target>22</maven.compiler.target>
+    <jpackage.appVersion>0.0.1</jpackage.appVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <log4j.version>2.24.3</log4j.version>
   </properties>

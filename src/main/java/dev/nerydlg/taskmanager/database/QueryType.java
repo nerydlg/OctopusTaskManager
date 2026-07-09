@@ -5,5 +5,6 @@ public enum QueryType {
   SELECT_ALL,
   INSERT,
   UPDATE,
-  DELETE, COUNT;
+  DELETE,
+  COUNT;
 }

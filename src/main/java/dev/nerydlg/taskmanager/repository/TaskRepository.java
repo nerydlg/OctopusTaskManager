@@ -15,7 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static dev.nerydlg.taskmanager.database.FieldType.DATE;
 import static dev.nerydlg.taskmanager.database.FieldType.INTEGER;
@@ -136,6 +138,25 @@ public class TaskRepository {
       tasks.add(createTaskFromResultSet(rs));
     }
     return tasks;
+  }
+
+
+  public Map<String, Integer> getNumOfTaskPerProjectByStatus(TaskStatus status) throws SQLException {
+    log.debug("Getting number of tasks per project");
+    Query query = QueryBuilder.create()
+        .select("project.name", "count(task.id) as count_task")
+        .from("tm_task as task")
+        .join("tm_project as project")
+        .on("project.id = task.project_id")
+        .where("task.status", Operator.EQUALS, INTEGER, status.getValue())
+        .groupBy("project.name")
+        .build();
+    ResultSet rs = storageService.executeQuery(query);
+    Map<String, Integer> map = new HashMap<>();
+    while (rs.next()) {
+      map.put(rs.getString("name"), rs.getInt("count_task"));
+    }
+    return map;
   }
 
   private Task createTaskFromResultSet(ResultSet rs) throws SQLException {

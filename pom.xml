@@ -6,13 +6,16 @@
 
     <groupId>dev.nerydlg</groupId>
     <artifactId>TaskManager</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <log4j.version>2.24.3</log4j.version>
+        <jpackage.appVersion>0.0.1</jpackage.appVersion>
+        <jpackage.icon>${project.basedir}/src/main/resources/ico/octopus_preview_64.png</jpackage.icon>
+        <jpackage.type>APP_IMAGE</jpackage.type>
     </properties>
     <dependencies>
         <!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
@@ -46,9 +49,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-
-
     <build>
         <plugins>
             <plugin>
@@ -74,4 +74,69 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- Builds a native app image via `mvn clean package -Pjpackage`.
+                 jpackage only targets the OS it runs on, so this must be run
+                 on each platform you want to distribute for. -->
+            <id>jpackage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- jpackage bundles every jar in its input dir into the app image,
+                             so the shaded jar is staged in its own directory first - pointing
+                             input straight at target/ would recursively copy target/dist into itself. -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>stage-jpackage-input</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/jpackage-input</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>${project.build.finalName}.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.8.0</version>
+                        <configuration>
+                            <name>TaskManager</name>
+                            <appVersion>${jpackage.appVersion}</appVersion>
+                            <vendor>nerydlg</vendor>
+                            <destination>${project.build.directory}/dist</destination>
+                            <removeDestination>true</removeDestination>
+                            <input>${project.build.directory}/jpackage-input</input>
+                            <mainJar>${project.build.finalName}.jar</mainJar>
+                            <mainClass>dev.nerydlg.taskmanager.Application</mainClass>
+                            <icon>${jpackage.icon}</icon>
+                            <type>${jpackage.type}</type>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jpackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

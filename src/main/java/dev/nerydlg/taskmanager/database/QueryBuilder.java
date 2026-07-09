@@ -3,6 +3,7 @@ package dev.nerydlg.taskmanager.database;
 import dev.nerydlg.taskmanager.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -230,6 +231,22 @@ public class QueryBuilder {
       parameters.add(new Parameter(field, values.get(i)));
     }
 
+    return this;
+  }
+
+  public QueryBuilder join(String tableName) {
+    query.append("JOIN ").append(tableName).append(" ");
+    return this;
+  }
+
+  //TODO: separate join condition from on
+  public QueryBuilder on(String joinCondition) {
+    query.append("ON ").append(joinCondition).append(" ");
+    return this;
+  }
+
+  public QueryBuilder groupBy(String... fields) {
+    query.append("GROUP BY ").append(String.join(", ", fields)).append(" ");
     return this;
   }
 

@@ -42,7 +42,7 @@ public class TaskManagerWindow implements Runnable {
     // configure the window
     menuBar.init();
     frame.setJMenuBar(menuBar.getMenuBar());
-    frame.setSize(800, 600);
+    frame.setSize(900, 700);
     frame.setLocationRelativeTo(null);
     tabManager.init();
     frame.add(tabManager.getTabPanel());

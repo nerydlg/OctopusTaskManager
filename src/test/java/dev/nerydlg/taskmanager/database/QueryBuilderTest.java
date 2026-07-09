@@ -105,12 +105,6 @@ class QueryBuilderTest {
     @Test
     void whenCreateQueryWithMultipleConditions_ThenReturnValidQuery() {
         // GIVEN
-        Fields field1 = new Fields("id", FieldType.INTEGER);
-        Fields field2 = new Fields("name", FieldType.TEXT);
-        Fields field3 = new Fields("other", FieldType.DATE);
-        Condition condition1 = new Condition(field1, Operator.EQUALS, 1);
-        Condition condition2 = new Condition(field2, Operator.EQUALS, 1);
-        Condition condition3 = new Condition(field3, Operator.EQUALS, 1);
         String expected = "SELECT * FROM test WHERE id = ? AND name = ? OR other = ?;";
         // WHEN
         Query query = QueryBuilder.create()
@@ -120,6 +114,22 @@ class QueryBuilderTest {
                 .and("name", Operator.EQUALS, FieldType.TEXT, "otherName")
                 .or("other", Operator.EQUALS, FieldType.DATE, "2026-01-01")
                 .build();
+        // THEN
+        assertEquals(expected, query.getQuery());
+    }
+
+    @Test
+    void whenCreateQueryJoin_ThenReturnValidQuery() {
+        // GIVEN
+        String expected = "SELECT test.name, count(other.id) FROM db_other as other JOIN db_test as test ON test.id = other.test_id GROUP BY test.id;";
+        // WHEN
+        Query query = QueryBuilder.create()
+            .select("test.name", "count(other.id)")
+            .from("db_other as other")
+            .join("db_test as test")
+            .on("test.id = other.test_id")
+            .groupBy("test.id")
+            .build();
         // THEN
         assertEquals(expected, query.getQuery());
     }

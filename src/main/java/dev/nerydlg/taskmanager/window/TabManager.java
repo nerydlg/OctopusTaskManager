@@ -3,6 +3,7 @@ package dev.nerydlg.taskmanager.window;
 import dev.nerydlg.taskmanager.components.ButtonAddTab;
 import dev.nerydlg.taskmanager.components.ButtonCloseTab;
 import dev.nerydlg.taskmanager.components.ButtonTabComponent;
+import dev.nerydlg.taskmanager.components.Dashboard;
 import dev.nerydlg.taskmanager.components.ProjectTaskPanel;
 import dev.nerydlg.taskmanager.entity.Project;
 import dev.nerydlg.taskmanager.repository.ProjectRepository;
@@ -40,7 +41,7 @@ public class TabManager {
     log.debug("Initializing tab manager");
 
     // Dashboard tab: real content in the body, custom header carrying a close button.
-    JComponent dashboardContent = new JPanel();
+    Dashboard dashboardContent = new Dashboard(projectRepository, taskRepository);
     addTab("Dashboard", dashboardContent);
     int dashboardIndex = tabPane.indexOfComponent(dashboardContent);
     ButtonCloseTab buttonCloseTab = new ButtonCloseTab(frame, tabPane);
