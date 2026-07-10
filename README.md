@@ -27,5 +27,9 @@ I consider the current code a *beta* version; it works, but I haven't fully test
 | 0.1.1   | Project created with the features mentioned above |
 
 ## How to Install
+> **NOTE:** This is a Java app so you will need to download also the [JRE](https://www.java.com/en/download)
+
+For common users click [here](https://github.com/nerydlg/OctopusTaskManager/releases/download/0.1.1/TaskManager-0.1.1-SNAPSHOT.jar) and you will get the JAR file. 
+
 This project requires Java and Maven to be compiled.
 1. Clone the repo and do the `mvn clean package`
