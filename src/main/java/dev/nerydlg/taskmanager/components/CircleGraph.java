@@ -19,13 +19,13 @@ import java.util.Map;
 public class CircleGraph extends JComponent {
 
   private static final Integer THICKNESS = 50;
-  private static final Integer LINE_DISTANCE = 50;
+  private static final Integer LINE_DISTANCE = 25;
   private static final Integer LABEL_DISTANCE = 20;
   private static final Stroke graphStroke = new BasicStroke(THICKNESS, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
   private static final Stroke basicStroke = new BasicStroke(1);
 
-  private final int startX = 200;
-  private final int startY = 100;
+  private final int startX = 100;
+  private final int startY = 50;
   private final Integer width;
   private final Integer height;
   private final Map<String, Integer> data;
@@ -49,7 +49,7 @@ public class CircleGraph extends JComponent {
     this.height = height;
     this.data = data;
     this.colors = colors;
-    setPreferredSize(new Dimension(width+400, height+200));
+    setPreferredSize(new Dimension(width+200, height+100));
     setAutoscrolls(true);
     setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(this.title), BorderFactory.createEmptyBorder(0, 0, 10, 10)));
   }
