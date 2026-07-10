@@ -73,7 +73,7 @@ public class Dashboard extends JComponent {
         new Color(150, 220,160),
         new Color(150, 190, 170)
         );
-    CircleGraph pendingTasksGraph = new CircleGraph("Pending Tasks", 300, 300, tasksPerProject, projColors);
+    CircleGraph pendingTasksGraph = new CircleGraph("Pending Tasks", 250, 250, tasksPerProject, projColors);
 
     // Task Done per project
     Map<String,Integer> doneTaskColors = taskRepository.getNumOfTaskPerProjectByStatus(TaskStatus.DONE);
@@ -85,7 +85,7 @@ public class Dashboard extends JComponent {
         new Color(60, 210,140),
         new Color(50, 220, 130)
     );
-    CircleGraph doneTaskGraph = new CircleGraph("Tasks Done", 300, 300, doneTaskColors, colorsG);
+    CircleGraph doneTaskGraph = new CircleGraph("Tasks Done", 250, 250, doneTaskColors, colorsG);
 
     // Priority graph
     Map<String, Integer> TasksByPriority = taskRepository.CountTasksByPriority();
@@ -97,7 +97,7 @@ public class Dashboard extends JComponent {
         new Color(130, 220, 190),
         new Color(110, 250, 200)
     );
-    CircleGraph priorityGraph = new CircleGraph("Tasks by priority", 300, 300, TasksByPriority, priorityColors);
+    CircleGraph priorityGraph = new CircleGraph("Tasks by priority", 250, 250, TasksByPriority, priorityColors);
 
     // Add List of Next Tasks
     JPanel nextTasksPanel = new JPanel(new BorderLayout());
