@@ -227,6 +227,39 @@ public class TaskRepository {
     return tasks;
   }
 
+  public List<Task> findAllNonClosedByProjectId(Integer projectId) throws SQLException {
+    log.debug("Finding all tasks Non closed tasks by project id {}", projectId);
+    Query query = QueryBuilder.create()
+        .selectAll()
+        .from(TABLE)
+        .where("project_id", Operator.EQUALS, INTEGER, projectId)
+        .and("status", Operator.LESS_THAN, INTEGER, TaskStatus.CLOSE.getValue())
+        .build();
+    ResultSet rs = storageService.executeQuery(query);
+    List<Task> tasks = new ArrayList<>();
+    while (rs.next()) {
+      tasks.add(createTaskFromResultSet(rs));
+    }
+    return tasks;
+  }
+
+  public List<Task> findAllByProjectIdAndClosedAt(Integer projectId, LocalDateTime closedAt) throws SQLException {
+    log.debug("Finding all tasks closed tasks by project id {}", projectId);
+    Query query = QueryBuilder.create()
+        .selectAll()
+        .from(TABLE)
+        .where("project_id", Operator.EQUALS, INTEGER, projectId)
+        .and("status", Operator.GREATER_THAN_OR_EQUALS, INTEGER, TaskStatus.CLOSE.getValue())
+        .and("updated_date", Operator.GREATER_THAN_OR_EQUALS, DATE,  closedAt)
+        .build();
+    ResultSet rs = storageService.executeQuery(query);
+    List<Task> tasks = new ArrayList<>();
+    while (rs.next()) {
+      tasks.add(createTaskFromResultSet(rs));
+    }
+    return tasks;
+  }
+
   private Task createTaskFromResultSet(ResultSet rs) throws SQLException {
     log.debug("Rendering task from result set");
     Integer id = rs.getInt("id");
@@ -252,6 +285,5 @@ public class TaskRepository {
         projId,
         parentId);
   }
-
 
 }
