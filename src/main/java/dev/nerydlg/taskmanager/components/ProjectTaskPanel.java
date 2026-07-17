@@ -15,7 +15,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -164,7 +166,10 @@ public class ProjectTaskPanel extends JPanel {
 
   private List<Task> loadTasks() {
     try {
-      return taskRepository.findAllByProjectId(project.id());
+      List<Task> tasks = new ArrayList<>();
+      tasks.addAll(taskRepository.findAllNonClosedByProjectId(project.id()));
+      tasks.addAll(taskRepository.findAllByProjectIdAndClosedAt(project.id(), LocalDate.now().atStartOfDay()));
+      return tasks;
     } catch (SQLException ex) {
       log.error("Failed to load tasks for project {}", project.id(), ex);
       return List.of();
