@@ -170,4 +170,8 @@ public class ProjectTaskPanel extends JPanel {
       return List.of();
     }
   }
+
+  public void refresh() {
+    table.setTasks(loadTasks());
+  }
 }
