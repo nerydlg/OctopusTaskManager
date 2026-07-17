@@ -41,9 +41,9 @@ public class TabManager {
     log.debug("Initializing tab manager");
 
     // Dashboard tab: real content in the body, custom header carrying a close button.
-    Dashboard dashboardContent = new Dashboard(projectRepository, taskRepository);
-    addTab("Dashboard", dashboardContent);
-    int dashboardIndex = tabPane.indexOfComponent(dashboardContent);
+    Dashboard dashboard = new Dashboard(projectRepository, taskRepository);
+    addTab("Dashboard", dashboard);
+    int dashboardIndex = tabPane.indexOfComponent(dashboard);
     ButtonCloseTab buttonCloseTab = new ButtonCloseTab(frame, tabPane);
     tabPane.setTabComponentAt(dashboardIndex,
         new ButtonTabComponent("Dashboard", tabPane, buttonCloseTab));
@@ -58,6 +58,21 @@ public class TabManager {
     ButtonAddTab buttonAddTab = new ButtonAddTab(frame, tabPane, projectRepository, taskRepository);
     tabPane.setTabComponentAt(addIndex,
         new ButtonTabComponent("", tabPane, buttonAddTab));
+
+    tabPane.addChangeListener(e -> {
+      int idx = tabPane.getSelectedIndex();
+      if (idx == 0) {
+        try {
+          Dashboard dash = (Dashboard) tabPane.getComponentAt(idx);
+          dash.refresh();
+        }catch (SQLException ex) {
+          log.error("Failed to refresh dashboard", ex);
+        }
+      } else {
+        ProjectTaskPanel component = (ProjectTaskPanel) tabPane.getComponentAt(idx);
+        component.refresh();
+      }
+    });
   }
 
   private void openProjects() {
@@ -74,10 +89,6 @@ public class TabManager {
     } catch (SQLException e) {
       log.error("Failed to open projects", e);
     }
-  }
-
-  public void addTab(String title, ImageIcon icon, JComponent panel) {
-    tabPane.addTab(title, icon, panel, title);
   }
 
   public void addTab(String title, JComponent component) {

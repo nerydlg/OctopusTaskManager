@@ -18,14 +18,13 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -49,13 +48,25 @@ public class Dashboard extends JComponent {
     content.setAutoscrolls(true);
     try {
       load();
-    }catch (SQLException ex) {
+    } catch (SQLException ex) {
       log.error("Failed to load dashboard", ex);
     }
     add(content, BorderLayout.CENTER);
   }
 
-  private void refresh() throws SQLException{
+  private static Color typeColor(TaskType type) {
+    if (type == null) {
+      return Color.GRAY;
+    }
+    return switch (type) {
+      case TASK -> new Color(220, 220, 120);
+      case FIX -> new Color(250, 100, 100);
+      case FEATURE -> new Color(50, 100, 250);
+      case INVESTIGATE -> new Color(60, 200, 50);
+    };
+  }
+
+  public void refresh() throws SQLException {
     content.removeAll();
     load();
     content.revalidate();
@@ -64,25 +75,25 @@ public class Dashboard extends JComponent {
 
   private void load() throws SQLException {
     // Tasks per project
-    Map<String,Integer> tasksPerProject = taskRepository.getNumOfTaskPerProjectByStatus(TaskStatus.NEW);
+    Map<String, Integer> tasksPerProject = taskRepository.getNumOfTaskPerProjectByStatus(TaskStatus.NEW);
     List<Color> projColors = List.of(
-        new Color(200, 240,200),
-        new Color(190, 220,250),
-        new Color(180, 220,150),
-        new Color(170, 210,250),
-        new Color(150, 220,160),
+        new Color(200, 240, 200),
+        new Color(190, 220, 250),
+        new Color(180, 220, 150),
+        new Color(170, 210, 250),
+        new Color(150, 220, 160),
         new Color(150, 190, 170)
-        );
+    );
     CircleGraph pendingTasksGraph = new CircleGraph("Pending Tasks", 250, 250, tasksPerProject, projColors);
 
     // Task Done per project
-    Map<String,Integer> doneTaskColors = taskRepository.getNumOfTaskPerProjectByStatus(TaskStatus.DONE);
+    Map<String, Integer> doneTaskColors = taskRepository.getNumOfTaskPerProjectByStatus(TaskStatus.DONE);
     List<Color> colorsG = List.of(
-        new Color(100, 140,220),
-        new Color(90, 160,200),
-        new Color(80, 180,180),
-        new Color(70, 190,160),
-        new Color(60, 210,140),
+        new Color(100, 140, 220),
+        new Color(90, 160, 200),
+        new Color(80, 180, 180),
+        new Color(70, 190, 160),
+        new Color(60, 210, 140),
         new Color(50, 220, 130)
     );
     CircleGraph doneTaskGraph = new CircleGraph("Tasks Done", 250, 250, doneTaskColors, colorsG);
@@ -102,7 +113,7 @@ public class Dashboard extends JComponent {
     // Add List of Next Tasks
     JPanel nextTasksPanel = new JPanel(new BorderLayout());
     List<Task> tasks = taskRepository.findNextSuggestedTasks(5);
-    nextTasksPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Next Suggested Task"), BorderFactory.createEmptyBorder(10, 10 , 10, 10)));
+    nextTasksPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Next Suggested Task"), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
     JList<Task> taskList = getTaskJList(tasks);
 
     nextTasksPanel.add(taskList);
@@ -165,18 +176,6 @@ public class Dashboard extends JComponent {
     }
   }
 
-  private static Color typeColor(TaskType type) {
-    if (type == null) {
-      return Color.GRAY;
-    }
-    return switch (type) {
-      case TASK -> new Color(220, 220, 120);
-      case FIX -> new Color(250, 100, 100);
-      case FEATURE -> new Color(50, 100, 250);
-      case INVESTIGATE -> new Color(60, 200, 50);
-    };
-  }
-
   /**
    * A small filled rectangle used as the per-type color chip.
    */
@@ -212,7 +211,7 @@ public class Dashboard extends JComponent {
   private static final class TaskListCellRenderer extends DefaultListCellRenderer {
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                   boolean isSelected, boolean cellHasFocus) {
+                                                  boolean isSelected, boolean cellHasFocus) {
       super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
       if (value instanceof Task task) {
         JLabel label = (JLabel) this;

@@ -228,7 +228,7 @@ public class TaskRepository {
   }
 
   private Task createTaskFromResultSet(ResultSet rs) throws SQLException {
-    log.debug("Creating task from result set");
+    log.debug("Rendering task from result set");
     Integer id = rs.getInt("id");
     String name = rs.getString("title");
     int type = rs.getInt("type");
