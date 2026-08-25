@@ -39,7 +39,22 @@ public class TabManager {
 
   public void init() {
     log.debug("Initializing tab manager");
+    buildTabs();
+    tabPane.addChangeListener(e -> refreshSelectedTab());
+  }
 
+  /**
+   * Rebuilds every tab from the storage that is currently open. Used after the
+   * opened task file changes, so the tabs stop showing the previous file content.
+   */
+  public void reload() {
+    log.debug("Reloading tab manager");
+    tabPane.removeAll();
+    buildTabs();
+    refreshSelectedTab();
+  }
+
+  private void buildTabs() {
     // Dashboard tab: real content in the body, custom header carrying a close button.
     Dashboard dashboard = new Dashboard(projectRepository, taskRepository);
     addTab("Dashboard", dashboard);
@@ -58,21 +73,24 @@ public class TabManager {
     ButtonAddTab buttonAddTab = new ButtonAddTab(frame, tabPane, projectRepository, taskRepository);
     tabPane.setTabComponentAt(addIndex,
         new ButtonTabComponent("", tabPane, buttonAddTab));
+  }
 
-    tabPane.addChangeListener(e -> {
-      int idx = tabPane.getSelectedIndex();
-      if (idx == 0) {
-        try {
-          Dashboard dash = (Dashboard) tabPane.getComponentAt(idx);
-          dash.refresh();
-        }catch (SQLException ex) {
-          log.error("Failed to refresh dashboard", ex);
-        }
-      } else {
-        ProjectTaskPanel component = (ProjectTaskPanel) tabPane.getComponentAt(idx);
-        component.refresh();
+  private void refreshSelectedTab() {
+    int idx = tabPane.getSelectedIndex();
+    if (idx < 0) {
+      // No selection, happens while the tabs are being rebuilt.
+      return;
+    }
+    Component selected = tabPane.getComponentAt(idx);
+    if (selected instanceof Dashboard dashboard) {
+      try {
+        dashboard.refresh();
+      } catch (SQLException ex) {
+        log.error("Failed to refresh dashboard", ex);
       }
-    });
+    } else if (selected instanceof ProjectTaskPanel projectTaskPanel) {
+      projectTaskPanel.refresh();
+    }
   }
 
   private void openProjects() {

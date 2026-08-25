@@ -2,6 +2,8 @@ package dev.nerydlg.taskmanager.configuration;
 
 import dev.nerydlg.taskmanager.repository.ProjectRepository;
 import dev.nerydlg.taskmanager.repository.TaskRepository;
+import dev.nerydlg.taskmanager.service.FileManagerService;
+import dev.nerydlg.taskmanager.utils.WindowUtils;
 import dev.nerydlg.taskmanager.window.TabManager;
 import dev.nerydlg.taskmanager.window.TaskManagerWindow;
 
@@ -20,7 +22,7 @@ public class WindowConfiguration {
   }
 
   public JFrame createFrame() {
-    return new JFrame("Octopus Task Manager");
+    return new JFrame(WindowUtils.APP_NAME);
   }
 
   public JTabbedPane createTabbedPane() {
@@ -33,9 +35,11 @@ public class WindowConfiguration {
 
   public TaskManagerWindow createTaskManagerWindow() {
     JFrame frame = createFrame();
+    FileManagerService fileManagerService = serviceConfiguration.createFileManagerService();
+    TabManager tabManager = createTabManager(frame);
     return new TaskManagerWindow(frame
-        , serviceConfiguration.createFileManagerService()
-        , menuConfiguration.createAppMenuBar()
-        , createTabManager(frame));
+        , fileManagerService
+        , menuConfiguration.createAppMenuBar(frame, fileManagerService, tabManager)
+        , tabManager);
   }
 }

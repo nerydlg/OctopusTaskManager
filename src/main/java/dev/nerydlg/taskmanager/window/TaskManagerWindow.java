@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import java.io.IOException;
 
 import static dev.nerydlg.taskmanager.utils.ImageUtils.createImageIcon;
+import static dev.nerydlg.taskmanager.utils.WindowUtils.setStorageTitle;
 
 public class TaskManagerWindow implements Runnable {
 
@@ -34,10 +35,11 @@ public class TaskManagerWindow implements Runnable {
     this.storageService = StorageService.getInstance();
   }
 
-  private void initComponents() {
+  private void initComponents(String storagePath) {
     log.debug("Initializing components");
     ImageIcon icon = createImageIcon("/ico/octopus_preview_64.png", 30, 30);
     frame.setIconImage(icon.getImage());
+    setStorageTitle(frame, storagePath);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     // configure the window
     menuBar.init();
@@ -62,7 +64,7 @@ public class TaskManagerWindow implements Runnable {
     try {
       String latestStorage = fileManagerService.getLatestStorageUsed();
       storageService.open(latestStorage);
-      initComponents();
+      initComponents(latestStorage);
       show();
     } catch (IOException e) {
       log.error("Failed While Opening db", e);

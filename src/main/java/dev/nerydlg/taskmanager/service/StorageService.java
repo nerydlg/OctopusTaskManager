@@ -34,7 +34,7 @@ public class StorageService {
     return instance;
   }
 
-  public void open(String storagePath) {
+  public boolean open(String storagePath) {
     try {
       if (connection != null) {
         connection.close();
@@ -45,8 +45,11 @@ public class StorageService {
       connection = DriverManager.getConnection(path.toString());
       initDB();
       log.info("Database connection opened successfully");
+      return true;
     } catch (SQLException ex) {
       log.error("Failed to open database connection to {}", storagePath, ex);
+      connection = null;
+      return false;
     }
   }
 
