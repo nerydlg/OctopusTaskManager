@@ -25,6 +25,7 @@ I consider the current code a *beta* version; it works, but I haven't fully test
 | Version | Changes                                 |
 |---------|-----------------------------------------|
 | 0.1.1   | Project created with the features mentioned above |
+| 0.1.2   | Fixed size, added funcitonality to menus in file, changed colors, and only shows completed tasks for the same day they are completed.
 
 ## How to Install
 > **NOTE:** This is a Java app so you will need to download also the [JRE](https://www.java.com/en/download)
