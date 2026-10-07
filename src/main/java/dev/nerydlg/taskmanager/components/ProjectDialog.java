@@ -39,14 +39,17 @@ public class ProjectDialog extends JDialog {
 
     if(project != null) {
       textField.setText(project.name());
-      status.setSelectedItem(project.status());
+      status.setSelectedIndex(project.status());
     }
 
     JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     inputPanel.add(label);
     inputPanel.add(textField);
-    inputPanel.add(comboLabel);
-    inputPanel.add(status);
+
+    if(project != null) {
+      inputPanel.add(comboLabel);
+      inputPanel.add(status);
+    }
 
     JButton ok = new JButton("OK");
     JButton cancel = new JButton("Cancel");
