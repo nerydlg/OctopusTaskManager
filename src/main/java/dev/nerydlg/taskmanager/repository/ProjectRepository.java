@@ -141,4 +141,15 @@ public class ProjectRepository {
     storageService.executeQuery(query);
   }
 
+  public void markAsDeleted(Project project) throws SQLException {
+    log.debug("Marking project as deleted");
+    Query query = QueryBuilder.create()
+        .update()
+        .table(TABLE)
+        .set("status")
+        .setValues(List.of(3), List.of(INTEGER)) // 3 = DELETE
+        .where("id", Operator.EQUALS, INTEGER, project.id())
+        .build();
+    storageService.executeQuery(query);
+  }
 }

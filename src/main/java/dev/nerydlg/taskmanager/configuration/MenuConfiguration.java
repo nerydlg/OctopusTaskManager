@@ -2,6 +2,7 @@ package dev.nerydlg.taskmanager.configuration;
 
 import dev.nerydlg.taskmanager.components.AlertDialog;
 import dev.nerydlg.taskmanager.components.ConfirmationDialog;
+import dev.nerydlg.taskmanager.components.ProjectManagementDialog;
 import dev.nerydlg.taskmanager.service.FileManagerService;
 import dev.nerydlg.taskmanager.service.StorageService;
 import dev.nerydlg.taskmanager.window.TabManager;
@@ -46,7 +47,10 @@ public class MenuConfiguration {
     create.addActionListener(e -> onCreateFile(frame, fileManagerService, tabManager));
     fileMenu.add(create);
     fileMenu.addSeparator();
-    fileMenu.add(new JMenuItem("Manage Projects..."));
+    JMenuItem manageProjects = new JMenuItem("Manage Projects...");
+    manageProjects.addActionListener(e -> onManageProjects(frame, tabManager));
+    fileMenu.add(manageProjects);
+
     fileMenu.addSeparator();
     JMenuItem exit = new JMenuItem("Exit");
     exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
@@ -54,6 +58,12 @@ public class MenuConfiguration {
 
     fileMenu.add(exit);
     return fileMenu;
+  }
+
+  private void onManageProjects(JFrame frame, TabManager tabManager) {
+    ProjectManagementDialog projectManagement = new ProjectManagementDialog(frame, tabManager);
+    projectManagement.setModal(true);
+    projectManagement.setVisible(true);
   }
 
   private void onOpenFile(JFrame frame, FileManagerService fileManagerService,

@@ -116,4 +116,8 @@ public class TabManager {
   public Component getTabPanel() {
     return tabPane;
   }
+
+  public ProjectRepository getProjectRepository() {
+    return projectRepository;
+  }
 }

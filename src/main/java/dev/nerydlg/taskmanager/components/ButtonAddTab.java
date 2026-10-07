@@ -47,19 +47,18 @@ public class ButtonAddTab extends JButton implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    ProjectDialog project = new ProjectDialog(frame, parent);
-    project.setVisible(true);
-    if (!project.isConfirmed()) {
+    ProjectDialog projectDialog = new ProjectDialog(frame, parent);
+    projectDialog.setVisible(true);
+    if (!projectDialog.isConfirmed()) {
       return;
     }
-    String projectName = project.getText();
-    if (projectName == null || projectName.isBlank()) {
+    Project createdProject = projectDialog.getProject();
+    if (createdProject == null || createdProject.name().isEmpty()) {
       return;
     }
 
-    Project savedProject;
     try {
-      savedProject = projectRepository.save(new Project(projectName));
+      createdProject = projectRepository.save(createdProject);
     } catch (SQLException ex) {
       log.error("Failed to save project", ex);
       JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -68,11 +67,11 @@ public class ButtonAddTab extends JButton implements ActionListener {
 
     // Insert the new project before the "+" tab (the last tab, which hosts this button).
     int index = parent.getTabCount() - 1;
-    JComponent content = new ProjectTaskPanel(frame, savedProject, taskRepository);
-    parent.insertTab(projectName, null, content, projectName, index);
+    JComponent content = new ProjectTaskPanel(frame, createdProject, taskRepository);
+    parent.insertTab(createdProject.name(), null, content, createdProject.name(), index);
 
     ButtonCloseTab closeTab = new ButtonCloseTab(frame, parent);
-    parent.setTabComponentAt(index, new ButtonTabComponent(projectName, parent, closeTab));
+    parent.setTabComponentAt(index, new ButtonTabComponent(createdProject.name(), parent, closeTab));
     parent.setSelectedIndex(index);
   }
 }
