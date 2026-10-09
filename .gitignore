@@ -45,3 +45,4 @@ build/
 ## testing files
 test.db
 identifier.sqlite
+dependency-reduced-pom.xml
